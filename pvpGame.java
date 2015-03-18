@@ -2,6 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
+package project;
 
 import javax.swing.JButton;
 
@@ -130,7 +131,7 @@ public class pvpGame {
                 {
                     System.out.println("Player" + p + " 3.1");
                     player.nodes.get(nodeToMove).setRow(grid.buttonPressedX);
-                    player.updateCells(nodeToMove);
+                    player.updateCells(opponent);
                     if(p == 1)
                     {
                         p1t1 = false;
@@ -166,7 +167,7 @@ public class pvpGame {
                 {
                     System.out.println("Player" + p + " 3.2");
                     player.nodes.get(nodeToMove).setRow(grid.buttonPressedX);
-                    player.updateCells(nodeToMove);
+                    player.updateCells(opponent);
                     nodeSelected = false;
                     nodeMoved = true;
                     if(p == 1)
@@ -189,7 +190,7 @@ public class pvpGame {
                 {
                     System.out.println("Player" + p + " 3.3");
                     player.nodes.get(nodeToMove).setCol(grid.buttonPressedY);
-                    player.updateCells(nodeToMove);
+                    player.updateCells(opponent);
                     nodeSelected = false;
                     nodeMoved = true;
                     if(p == 1)
@@ -212,7 +213,7 @@ public class pvpGame {
                 {
                     System.out.println("Player" + p + " 3.4");
                     player.nodes.get(nodeToMove).setCol(grid.buttonPressedY);
-                    player.updateCells(nodeToMove);
+                    player.updateCells(opponent);
                     nodeSelected = false;
                     nodeMoved = true;
                     if(p == 1)
