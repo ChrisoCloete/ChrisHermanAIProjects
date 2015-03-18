@@ -1,5 +1,5 @@
 
-
+package project;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -75,7 +75,7 @@ class Player
         
         if (type.equals("top"))
         {
-            //System.out.println("top :" + distance);
+            System.out.println("top :" + distance);
             for (int j = row - 1; j > row - distance - 1; j--)
             {
                 tempBool = true;
@@ -110,7 +110,7 @@ class Player
             return answer;
         } else if (type.equals("bottom"))
         {
-            //System.out.println("bottom :" + distance);
+            System.out.println("bottom :" + distance);
             for (int j = row + 1; j < row + distance + 1; j++)
             {
                 tempBool = true;
@@ -145,7 +145,7 @@ class Player
             return answer;
         } else if (type.equals("left"))
         {
-            //System.out.println("left :" + distance);
+            System.out.println("left :" + distance);
             for (int j = col - 1; j > col - distance - 1; j--)
             {
                 tempBool = true;
@@ -181,7 +181,7 @@ class Player
         }
         else if (type.equals("right"))
         {
-            //System.out.println("right :" + distance);
+            System.out.println("right :" + distance);
             for (int j = col + 1; j < col + distance + 1; j++)
             {
                 tempBool = true;
@@ -540,7 +540,7 @@ class Player
                 }
             }
             this.fixGrid();
-        }*/
+        }
         
         /*boolean tempFirstWidth = true;
                         boolean tempFirstLength = true;
@@ -785,6 +785,191 @@ class Player
                                 }
                             }
                         }*/
+        for (int i = 0; i < nodes.size(); i++)
+        {
+            nodes.get(i).checked = false;
+        }
+        int count = 1;
+        for (int i = 0; i < nodes.size();i++)
+        {
+            nodes.get(i).checked = true;
+            int leftBound = nodes.get(i).getCol() - 1;
+            while(leftBound != 0 && isTempCell(nodes.get(i).getRow(), leftBound))
+            {
+                int j = isNode(nodes.get(i).getRow(), leftBound);
+                if(j > -1 && !nodes.get(j).checked)
+                {
+                    nodes.get(j).checked = true;
+                    ++count;
+                }
+                --leftBound;
+            }
+            if(leftBound != 0)
+            {
+                ++leftBound;
+            }
+            
+            
+        }
     }
     
+    /*public void fixGrid()
+    {
+        LinkedList<Cell> tmp = null;
+        for (int i = 0; i < max; i++)
+        {
+            for (int j = 0; j < max; j++)
+            {
+                for(int k = 0; k < tempCells.size();k++)
+                {
+                    if(tempCells.get(k).getRow() == i && tempCells.get(k).getCol() == j)
+                    {
+                        int x = i;
+                        int maxX = 0;
+                        int y = j;
+                        int maxY = 0;
+                        boolean go = true;
+                        while(go)
+                        {
+                            boolean cont = true;
+                            for(int o = y; o < max; o++)
+                            {
+                                for(int m = 0; m < tempCells.size();m++)
+                                {
+                                    boolean breaker = false;
+                                    if(tempCells.get(m).getRow() == x && tempCells.get(m).getCol() == o)
+                                    {
+                                        if(maxY<o)
+                                            maxY = o;
+                                    }
+                                    else
+                                    {
+                                        for(int n = 0; n < nodes.size();n++)
+                                        {
+                                            if(nodes.get(n).getRow() == x && nodes.get(n).getCol() == o)
+                                            {
+                                                if(maxY<o)
+                                                    maxY = o;
+                                            }
+                                            else
+                                            {
+                                                breaker = true;
+                                                cont = false;
+                                                break;
+                                            }
+                                        }
+                                        if(breaker)
+                                            break;
+                                    }
+                                }
+                                if(!cont)
+                                    break;
+                            }
+                            
+                            cont = true;
+                            for(int o = x; o < max; o++)
+                            {
+                                for(int m = 0; m < tempCells.size();m++)
+                                {
+                                    boolean breaker = false;
+                                    if(tempCells.get(m).getRow() == o && tempCells.get(m).getCol() == y)
+                                    {
+                                        if(maxX<o)
+                                            maxX = o;
+                                    }
+                                    else
+                                    {
+                                        for(int n = 0; n < nodes.size();n++)
+                                        {
+                                            if(nodes.get(n).getRow() == o && nodes.get(n).getCol() == y)
+                                            {
+                                                if(maxX<o)
+                                                    maxX = o;
+                                            }
+                                            else
+                                            {
+                                                breaker = true;
+                                                cont = false;
+                                                break;
+                                            }
+                                        }
+                                        if(breaker)
+                                            break;
+                                    }
+                                }
+                                if(!cont)
+                                    break;
+                            }
+                            x++;
+                            y++;
+                            go = false;
+                            for(int m = 0; m < tempCells.size();m++)
+                            {
+                                if(tempCells.get(m).getRow() == x && tempCells.get(m).getCol() == y)
+                                {
+                                    go = true;
+                                    break;
+                                }
+                            }
+                        }
+                        /*System.out.println(i);
+                        System.out.println(j);
+                        System.out.println(x);
+                        System.out.println(y);
+                        System.out.println();*/
+                        /*for (int e = x; e <= maxX; e++)
+                        {
+                            for (int f = y; f <= maxY; f++)
+                            {
+                                boolean in = false;
+                                for(int m = 0; m < tempCells.size();m++)
+                                {
+                                    if(tempCells.get(m).getRow() == e && tempCells.get(m).getCol() == f)
+                                    {
+                                        in = true;
+                                        break;
+                                    }
+                                }
+                                if(!in)
+                                {
+                                    for(int m = 0; m < nodes.size();m++)
+                                    {
+                                        if(nodes.get(m).getRow() == e && nodes.get(m).getCol() == f)
+                                        {
+                                            in = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                                if(!in)
+                                {
+                                    tempCells.add(new Cell(e, f));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }*/
+    
+    private boolean isTempCell(int row, int col)
+    {
+        for (int i = 0; i < tempCells.size(); i++)
+        {
+            if (tempCells.get(i).getRow() == row && tempCells.get(i).getRow() == col)
+                return true;
+        }
+        return false;
+    }
+    
+    private int isNode(int row, int col)
+    {
+        for (int i = 0; i < nodes.size(); i++)
+        {
+            if (nodes.get(i).getRow() == row && nodes.get(i).getRow() == col)
+                return i;
+        }
+        return -1;
+    }
 }
