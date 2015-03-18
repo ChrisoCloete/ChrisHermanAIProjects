@@ -1,4 +1,4 @@
-package project;
+
 import java.util.LinkedList;
 
 class Node

@@ -1,4 +1,4 @@
-package project;
+
 class Cell
 {
     class coordinates

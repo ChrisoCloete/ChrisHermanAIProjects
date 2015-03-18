@@ -1,6 +1,5 @@
 //u13037618 Herman Keuris
 //u13029721 Chris Cloete
-package project;
 
 import javax.swing.JFrame;
 import javax.swing.JButton;
