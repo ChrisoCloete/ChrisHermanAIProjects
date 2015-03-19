@@ -4,28 +4,37 @@ import java.util.LinkedList;
 
 class Player
 {
+    //number of pieces each player may initially have
     private int playerNum;
+    //minimum edge of the grid
     private int min;
+    //maximum edge of the grid
     private int max;
+    //grid length and width
     private int gridSize;
+    //Linked list of player's pieces
     public LinkedList<Node> nodes;
+    //Linked list of all pieces that share a rectangle
     public LinkedList<Node> groupMembers;
+    //Linked list of all cells of the grid which are filled for that player (i.e. nodes and rectangle spaces)
     public LinkedList<Cell> tempCells;
-    public LinkedList<Cell> checked;
+    //public LinkedList<Cell> checked;
     
     public Player(int pNum, int maxNodes, int gSize)
     {
+        //Constructor: initialization of values
         playerNum = pNum;
         gridSize = gSize;
         nodes = new LinkedList<>();
         tempCells = new LinkedList<>();
-        checked = new LinkedList<>();
+        //checked = new LinkedList<>();
 
         groupMembers = new LinkedList<>();
         
         min = 0;
         max = gridSize - 1;
         
+        //Set it so that initially the first player only spawns his pieces on the left side of the grid and the second player only spawns his pieces on the right side of the grid
         while (nodes.size() != maxNodes)
         { 
             int randomCols;
@@ -60,10 +69,23 @@ class Player
                 }
             }
         }
+        
+        //Add all nodes and filled rectangle spaces to the tempCells linked list
+        for (int i = 0; i < nodes.size() - 1; i++)
+        {
+            tempCells.add(new Cell((nodes.get(i).getRow()), (nodes.get(i).getCol())));
+            for (int j = 0; j < nodes.get(i).myCells.size();j++)
+            {
+                tempCells.add(new Cell((nodes.get(i).myCells.get(j).getRow()), (nodes.get(i).myCells.get(j).getCol())));
+            }
+        }
+        //call updateCells to make sure all cells are up to date
         updateCells(null);
     }
     public int[] getValidMoves(String type, int index, Player other)
     {
+        //getValidMoves gets the direction in which the piece wants to move (type), the player's piece to move (index) and the player's opponent (other)
+        //this function returns an array of the spaces to which this piece may move in the chosen direction
         int distance = nodes.get(index).groupSize;
         int row = nodes.get(index).getRow();
         int col = nodes.get(index).getCol();
@@ -74,7 +96,7 @@ class Player
         
         if (type.equals("top"))
         {
-            System.out.println("top :" + distance);
+           // System.out.println("top :" + distance);
             for (int j = row - 1; j > row - distance - 1; j--)
             {
                 tempBool = true;
@@ -109,7 +131,7 @@ class Player
             return answer;
         } else if (type.equals("bottom"))
         {
-            System.out.println("bottom :" + distance);
+            //System.out.println("bottom :" + distance);
             for (int j = row + 1; j < row + distance + 1; j++)
             {
                 tempBool = true;
@@ -144,7 +166,7 @@ class Player
             return answer;
         } else if (type.equals("left"))
         {
-            System.out.println("left :" + distance);
+            //System.out.println("left :" + distance);
             for (int j = col - 1; j > col - distance - 1; j--)
             {
                 tempBool = true;
@@ -180,7 +202,7 @@ class Player
         }
         else if (type.equals("right"))
         {
-            System.out.println("right :" + distance);
+            //System.out.println("right :" + distance);
             for (int j = col + 1; j < col + distance + 1; j++)
             {
                 tempBool = true;
@@ -218,6 +240,8 @@ class Player
     }
     public void updateCells(Player other)
     {
+        /*System.out.println("Update: " + nodes.get(0).getRow() + nodes.get(0).getCol());
+        System.out.println("UC1");*/
         int rectLengthStart = 0;
         int rectLengthEnd = 0;
         int rectWidthStart = 0;
@@ -225,16 +249,17 @@ class Player
         boolean tempBool = false;
         tempCells = new LinkedList<>();
 
-        for (int i = 0; i < nodes.size() - 1; i++)
+        /*for (int i = 0; i < nodes.size() - 1; i++)
         {
             tempCells.add(new Cell((nodes.get(i).getRow()), (nodes.get(i).getCol())));
             for (int j = 0; j < nodes.get(i).myCells.size();j++)
             {
                 tempCells.add(new Cell((nodes.get(i).myCells.get(j).getRow()), (nodes.get(i).myCells.get(j).getCol())));
             }
-        }
-        
-        /*if(other != null)
+        }*/
+        //System.out.println("UC2");
+        boolean taken = false;
+        if(other != null)
         {
             for (int i = 0; i < this.tempCells.size(); i++)
                 for (int j = 0; j < other.tempCells.size(); j++)
@@ -247,12 +272,16 @@ class Player
                                 if ((other.tempCells.get(j).getRow() == other.nodes.get(k).myCells.get(m).getRow()) && (other.tempCells.get(j).getCol() == other.nodes.get(k).myCells.get(m).getCol()))
                                 {
                                     this.nodes.add(other.nodes.remove(k));
+                                    taken = true;
                                 }
                             }
                     }
                 }
-        }*/
+        }
+        if (taken)
+            updateCells(other);
         
+        //System.out.println("UC3");
         for (int i = 0; i < nodes.size() - 1; i++)
         {
             for (int j = i + 1; j < nodes.size(); j++)
@@ -323,6 +352,7 @@ class Player
                 }
             }
         }
+        //System.out.println("UC4");
         
         if (!(tempCells.isEmpty()))
         {
@@ -412,6 +442,7 @@ class Player
             }
             //System.out.println("outWhile");
         }
+        //System.out.println("UC5");
         
         /*for (int i = 0; i < nodes.size() - 1; i++)
         {
@@ -421,7 +452,12 @@ class Player
                 tempCells.add(new Cell((nodes.get(i).myCells.get(j).getRow()), (nodes.get(i).myCells.get(j).getCol())));
             }
         }*/
-        
+        //System.out.println("Player1: " + nodes.get(0).getRow() + nodes.get(0).getCol());
+        setGroupSize();
+    }
+    
+    public void setGroupSize()
+    {
         for (int i = 0; i < nodes.size(); i++)
         {
             nodes.get(i).checked = false;
@@ -435,6 +471,8 @@ class Player
         int rightBound = 0;
         int topBound = 0;
         int bottomBound = 0;
+        /*System.out.println("UC6");
+        System.out.println("Player: " + nodes.get(0).getRow() + nodes.get(0).getCol());*/
         for (int i = 0; i < nodes.size();i++)
         {
             if (!nodes.get(i).checked)
@@ -444,6 +482,10 @@ class Player
                 leftBound = nodes.get(i).getCol() - 1;
                 if (leftBound < 0)
                     leftBound = 0;
+                /*if (isTempCell(nodes.get(i).getRow(), leftBound))
+                    System.out.println("X: " + nodes.get(i).getRow() + "Y: " + nodes.get(i).getCol() + "isTemp");
+                else
+                    System.out.println("X: " + nodes.get(i).getRow() + "Y: " + nodes.get(i).getCol() + "isNotTemp");*/
                 while(leftBound > 0 && isTempCell(nodes.get(i).getRow(), leftBound))
                 {
                     int j = isNode(nodes.get(i).getRow(), leftBound);
@@ -459,9 +501,14 @@ class Player
                 {
                     ++leftBound;
                 }
+                //System.out.println("X: " + nodes.get(i).getRow() + "Y: " + nodes.get(i).getCol() + "LeftBound: " + leftBound);
                 topBound = nodes.get(i).getRow() - 1;
                 if (topBound < 0)
                     topBound = 0;
+                /*if (isTempCell(topBound, nodes.get(i).getCol()))
+                    System.out.println("X: " + nodes.get(i).getRow() + "Y: " + nodes.get(i).getCol() + "isTemp");
+                else
+                    System.out.println("X: " + nodes.get(i).getRow() + "Y: " + nodes.get(i).getCol() + "isNotTemp");*/
                 while(topBound > 0 && isTempCell(topBound, nodes.get(i).getCol()))
                 {
                     int k = isNode(topBound, nodes.get(i).getCol());
@@ -477,10 +524,14 @@ class Player
                 {
                     ++topBound;
                 }
-
+                //System.out.println("X: " + nodes.get(i).getRow() + "Y: " + nodes.get(i).getCol() + "topBound: " + topBound);
                 rightBound = nodes.get(i).getCol() + 1;
                 if (rightBound > max)
                     rightBound = max;
+                /*if ((isTempCell(nodes.get(i).getRow(), rightBound)))
+                    System.out.println("X: " + nodes.get(i).getRow() + "Y: " + nodes.get(i).getCol() + "isTemp");
+                else
+                    System.out.println("X: " + nodes.get(i).getRow() + "Y: " + nodes.get(i).getCol() + "isNotTemp");*/
                 while(rightBound < max && isTempCell(nodes.get(i).getRow(), rightBound))
                 {
                     int j = isNode(nodes.get(i).getRow(), rightBound);
@@ -490,15 +541,20 @@ class Player
                         groupMembers.add(nodes.get(j));
                         ++count;
                     }
-                    --rightBound;
+                    ++rightBound;
                 }
                 if(rightBound != max)
                 {
-                    ++rightBound;
+                    --rightBound;
                 }
+                //System.out.println("X: " + nodes.get(i).getRow() + "Y: " + nodes.get(i).getCol() + "rightBound: " + rightBound);
                 bottomBound = nodes.get(i).getRow() + 1;
                 if (bottomBound > max)
                     bottomBound = max;
+                /*if (isTempCell(bottomBound, nodes.get(i).getCol()))
+                    System.out.println("X: " + nodes.get(i).getRow() + "Y: " + nodes.get(i).getCol() + "isTemp");
+                else
+                    System.out.println("X: " + nodes.get(i).getRow() + "Y: " + nodes.get(i).getCol() + "isNotTemp");*/
                 while(bottomBound < max && isTempCell(bottomBound, nodes.get(i).getCol()))
                 {
                     int k = isNode(bottomBound, nodes.get(i).getCol());
@@ -508,55 +564,68 @@ class Player
                         groupMembers.add(nodes.get(k));
                         ++count;
                     }
-                    --bottomBound;
+                    ++bottomBound;
                 }
                 if(bottomBound != max)
                 {
-                    ++bottomBound;
+                    --bottomBound;
                 }
+                //System.out.println("X: " + nodes.get(i).getRow() + "Y: " + nodes.get(i).getCol() + "bottomBound: " + bottomBound);
                 if (allNodesChecked())
                 {
+                    //System.out.println("All chekced");
                     for (int z = 0; z < groupMembers.size();z++)
                     {
-                        groupMembers.get(z).groupSize = count;
+                        //System.out.println("GroupMembers" + groupMembers.get(z).getRow() + groupMembers.get(z).getCol() + " count: " + groupMembers.size());
+                        groupMembers.get(z).groupSize = groupMembers.size(); 
                     }
+                    if (!groupMembers.isEmpty())
+                        groupMembers.clear();
                 }
                 else
                 {
+                    //System.out.println("Not all chekced");
                     boolean end = false;
                     for (int a = topBound; a <= bottomBound; a++)
                     {
-                        if (end)
-                            break;
+                        //if (end)
+                        //    break;
                         for (int b = leftBound; b <= rightBound; b++)
                         {
-                            int index = isNode(b,a);
+                            int index = isNode(a,b);
+                            /*if (index > -1)
+                                System.out.println("isNode " + a + b);
+                            else
+                                System.out.println("isNotNode " + a + b);*/
                             if(index > -1 && !nodes.get(index).checked)
                             {
                                 nodes.get(index).checked = true;
                                 groupMembers.add(nodes.get(index));
                                 ++count;
                             }
-                            if (allNodesChecked())
-                            {
-                                for (int z = 0; z < groupMembers.size();z++)
-                                {
-                                    groupMembers.get(z).groupSize = count;
-                                    end = true;
-                                }
-                            }
                         }
                     }
-                }
+                    for (int z = 0; z < groupMembers.size();z++)
+                    {
+                        //System.out.println("NACGroupMembers" + groupMembers.get(z).getRow() + groupMembers.get(z).getCol() + " count: " + groupMembers.size());
+                        groupMembers.get(z).groupSize = groupMembers.size();
+                        //end = true;
+                    }
+                    if (!groupMembers.isEmpty())
+                        groupMembers.clear();
+                    }
             }
         }
+        //System.out.println("UC7");
     }
     
     private boolean isTempCell(int row, int col)
     {
+        //System.out.println("PassedValue" + row + col);
         for (int i = 0; i < tempCells.size(); i++)
         {
-            if (tempCells.get(i).getRow() == row && tempCells.get(i).getRow() == col)
+            //System.out.println("CheckValue" + tempCells.get(i).getRow() + col);
+            if (tempCells.get(i).getRow() == row && tempCells.get(i).getCol() == col)
                 return true;
         }
         return false;
@@ -566,7 +635,7 @@ class Player
     {
         for (int i = 0; i < nodes.size(); i++)
         {
-            if (nodes.get(i).getRow() == row && nodes.get(i).getRow() == col)
+            if (nodes.get(i).getRow() == row && nodes.get(i).getCol() == col)
                 return i;
         }
         return -1;
